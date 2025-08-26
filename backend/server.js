@@ -1,8 +1,11 @@
 import express from 'express';
-import authRoutes from './routes/authentication_route.js';
 import dotenv from 'dotenv';
-import connectMongoDB from './db/connectMongoDB.js';
 import cookieParser from 'cookie-parser';
+
+import authRoutes from './routes/authentication_route.js';
+import userRoutes from './routes/user_route.js';
+import connectMongoDB from './db/connectMongoDB.js';
+
 
 dotenv.config();
 
@@ -17,10 +20,11 @@ app.use(express.urlencoded({ extended: true })); // Middleware to parse URL-enco
 
 
 app.use('/api/auth', authRoutes);
-
+app.use('/api/users', userRoutes);
 
 
 app.listen(PORT, () => {
     console.log('Server is running on port', PORT);
     connectMongoDB();
     });
+
