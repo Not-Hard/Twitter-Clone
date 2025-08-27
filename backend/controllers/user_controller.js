@@ -1,5 +1,9 @@
+import bcrypt from "bcryptjs";
+import {v2 as cloudinary} from 'cloudinary';
+
 import User from "../models/user_module.js";
 import Notification from "../models/notification_model.js";
+
 
 
 export const getUserProfile = async (req, res) => {
@@ -95,4 +99,80 @@ export const getSuggestedUsers = async (req, res) => {
         console.error("Error fetching suggested users:", error.message);
         res.status(500).json({ error: error.message });
     }
+};
+
+export const updateUserProfile = async (req, res) => {
+
+    const userId = req.user._id;
+    const { username, fullName, email, bio, link, currentPassword, newPassword } = req.body;
+    let {profileImg, coverImg} = req.body;
+     
+    try{
+        //Check if the user exists
+        let user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+        
+        if((!currentPassword && newPassword) || (currentPassword && !newPassword)) {
+            return res.status(400).json({ error: "Current password and new password are required together" });
+        }
+
+        if(currentPassword && newPassword) {
+            const isMatch = await bcrypt.compare(currentPassword, user.password); 
+            if(!isMatch) {
+                return res.status(400).json({ error: "Current password is incorrect" });
+            }if(newPassword.length < 6) {
+                return res.status(400).json({ error: "New password must be at least 6 characters long" });
+            }
+            const salt = await bcrypt.genSalt(10);
+            user.password = await bcrypt.hash(newPassword, salt);
+
+        }
+
+        if(profileImg){
+            if(user.profileImg){
+                const publicId = user.profileImg.split("/").pop().split(".")[0];
+                await cloudinary.uploader.destroy(publicId);
+            }
+
+            const uploadResponse = await cloudinary.uploader.upload(profileImg);
+            profileImg = uploadResponse.secure_url; // The uploaded result
+        }
+
+        if(coverImg){
+            if(user.coverImg){
+                const publicId = user.coverImg.split("/").pop().split(".")[0];
+                await cloudinary.uploader.destroy(publicId);
+            }
+            const uploadResponse = await cloudinary.uploader.upload(coverImg);
+            coverImg = uploadResponse.secure_url; // The uploaded result
+        }
+
+        // Check if the new email already exists
+        const existingEmail = await User.findOne({ email });
+        if (existingEmail && existingEmail._id.toString() !== userId) {
+            return res.status(400).json({ error: "Email already taken, choose another one" });
+        }
+
+        user.fullName = fullName || user.fullName; // Update fullName if provided
+        user.email = email || user.email; // Update email if provided
+        user.username = username || user.username; // Update username if provided
+        user.bio = bio || user.bio; // Update bio if provided
+        user.link = link || user.link; // Update link if provided
+        user.profileImg = profileImg || user.profileImg; // Update profileImg if provided
+        user.coverImg = coverImg || user.coverImg; // Update coverImg if provided
+
+
+        user = await user.save();
+
+        //Password should be null in response
+        user.password = null; // Exclude password field
+
+        res.status(200).json(user);
+
+    }catch (error) {
+		console.log("Error in updateUser: ", error.message);
+		res.status(500).json({ error: error.message });
+	}
 };
