@@ -114,10 +114,12 @@ export const likeUnLikePost = async(req, res) => {
         if(isLiked) {
             //Unliked post
             await Post.updateOne({_id: postId},{$pull: {likes: userId}});
+            await User.updateOne({_id: userId}, {$pull: {LikedPosts: postId}});
             res.status(200).json({message: "Post unliked successfully"}); 
         } else {
             //Like
             post.likes.push(userId);
+            await User.updateOne({_id: userId}, {$push: {LikedPosts: postId}});
             await post.save();
 
             const notification = new Notification({
@@ -133,5 +135,19 @@ export const likeUnLikePost = async(req, res) => {
         res.status(500).json({message: "Internal Server Error"});
         console.log("Error liking/unliking post:", error.message);
 
+    }
+}
+
+export const getAllPosts = async (req, res) => {
+    try {
+        const posts = await Post.find().sort({createdAt: -1}).populate({path: 'user', select: '-password'})
+        .populate({path: 'comments.user', select: '-password'});
+        if(!posts || posts.length === 0) {
+            return res.status(200).json([]);
+        }
+        res.status(200).json(posts);
+    } catch (error) {
+        console.error("Error fetching posts:", error);
+        res.status(500).json({message: "Internal Server Error"});
     }
 }
