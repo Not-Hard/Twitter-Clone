@@ -46,9 +46,18 @@
   --noise: 0;
 }
 
-:root:has(input.theme-controller[value=mytheme]:checked),[data-theme="mytheme"] { /* mytheme is the name of the custom theme */
-  color-scheme: black;
+:root:has(input.theme-controller[value=mytheme]:checked),
+[data-theme="mytheme"] {
+  color-scheme: light;
+
+  /* Background */
   --color-base-100: oklch(0% 0 0);
-  /* ...rest of CSS variables like above example */
+
+  /* Text on top of background */
+  --color-base-content: oklch(98% 0.01 240);
+
+  /* Also update other variables if needed */
+  --color-primary: oklch(55% 0.3 240);
+  --color-primary-content: oklch(98% 0.01 240);
 }
 
