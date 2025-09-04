@@ -1,7 +1,7 @@
 export default function App() {
   return (
     <>
-      <button className="btn btn-soft">Default</button>
+      <button className="btn btn-primary">Default</button>
       <button className="btn btn-soft btn-primary">Primary</button>
       <button className="btn btn-soft btn-secondary">Secondary</button>
       <button className="btn btn-soft btn-accent">Accent</button>
