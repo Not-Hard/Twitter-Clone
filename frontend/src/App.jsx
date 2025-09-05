@@ -1,15 +1,30 @@
+import { Route, Routes} from "react-router-dom"
+
+import HomePage from "./pages/home/homePage";
+import  SignUpPage  from "./pages/authentication/signup/signupPage";
+import LoginPage from "./pages/authentication/login/loginPage";
+import NotificationPage from "./pages/notification/notificationPage";
+import ProfilePage from "./pages/profile/profilePage";
+
+import Sidebar from "./components/common/sideBar";
+import RightPanel from "./components/common/rightPanel";
+
+
+
 export default function App() {
   return (
-    <>
-      <button className="btn btn-primary">Default</button>
-      <button className="btn btn-soft btn-primary">Primary</button>
-      <button className="btn btn-soft btn-secondary">Secondary</button>
-      <button className="btn btn-soft btn-accent">Accent</button>
-      <button className="btn btn-soft btn-info">Info</button>
-      <button className="btn btn-soft btn-success">Success</button>
-      <button className="btn btn-soft btn-warning">Warning</button>
-      <button className="btn btn-soft btn-error">Error</button>
-    </>
+    <div className='flex max-w-6xl mx-auto'>
+      {/* Common Component, it's not wrapped with Routes*/}
+      <Sidebar/>
+			<Routes>
+				<Route path='/' element={<HomePage />} />
+				<Route path='/signup' element={<SignUpPage />} />
+				<Route path='/login' element={<LoginPage />} />
+        <Route path='/notifications' element={<NotificationPage/>}/>
+        <Route path='/profile/:username' element={<ProfilePage/>}/>
+			</Routes>
+      <RightPanel/>
+		</div>
 
   );
 }
