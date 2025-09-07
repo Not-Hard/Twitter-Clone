@@ -8,31 +8,31 @@ export const  singup = async (req, res) => {
 
         // Validation
         if (!username || !fullName || !password || !email) {
-            return res.status(400).json({ message: 'All fields are required' });
+            return res.status(400).json({ error: 'All fields are required' });
         }
 
         // Password length check
         if (password.length < 6) {
-            return res.status(400).json({ message: 'Password must be at least 6 characters long' });
+            return res.status(400).json({ error: 'Password must be at least 6 characters long' });
         }
 
         // Check if username already exists
         const existingUsername = await User.findOne({  username  });
         if (existingUsername) {
-            return res.status(400).json({ message: 'Username already in use' });
+            return res.status(400).json({ error: 'Username already in use' });
         }
 
 
         // Basic email format validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
-            return res.status(400).json({ message: 'Invalid email format' });
+            return res.status(400).json({ error: 'Invalid email format' });
         }
 
         // Check if email already exists
         const existingEmail = await User.findOne({ email });
         if (existingEmail) {
-            return res.status(400).json({ message: 'Email already in use' });
+            return res.status(400).json({ error: 'Email already in use' });
         }
 
         // Hash password, if someone gets access to the database, they won't see the actual password
@@ -50,8 +50,8 @@ export const  singup = async (req, res) => {
 
         // Save user to database
         if(newUser) {
-            generateTokenAndSetCookie(newUser._id, res); 
             await newUser.save();
+            generateTokenAndSetCookie(newUser._id, res); 
             res.status(201).json({ 
                 message: 'User created successfully', 
                 user: {
@@ -86,7 +86,7 @@ export const login = async (req, res) => {
 
         // Check if user exists and password is correct
         if (!user || !isPasswordCorrect) {
-            return res.status(401).json({ message: 'Invalid username or password' });
+            return res.status(401).json({ error: 'Invalid username or password' });
         }
 
     
