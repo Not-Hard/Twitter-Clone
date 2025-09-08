@@ -113,7 +113,7 @@ export const login = async (req, res) => {
 export const logout = async (req, res) => {
     try {
         // Clear the cookie
-        res.clearCookie('token');
+        res.clearCookie('jwt');
         res.json({ 
             data: 'You hit the logout endpoint' 
         });
