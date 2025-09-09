@@ -14,7 +14,7 @@ const LoginPage = () => {
 		password: "",
 	});
 
-	const {mutate: loginMutation, isError, isPending, error} = useMutation({
+	const {mutate: loginMutation, isPending, isError} = useMutation({
 		mutationFn: async({username, password}) => {
 			try {
 				const res = await fetch("/api/auth/login", {
@@ -32,11 +32,15 @@ const LoginPage = () => {
 				}
 
 			} catch (error) {
-				throw new Error(error);
+				
+				
 			}
 		},
 		onSuccess: () =>{
 			toast.success("Login Successful");
+		},
+		onError: () =>{
+			toast.success("Logout failure");
 		}
 	})
 
