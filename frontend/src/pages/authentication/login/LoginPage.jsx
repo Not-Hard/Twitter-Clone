@@ -16,7 +16,7 @@ const LoginPage = () => {
 
 	const queryClient = useQueryClient();
 
-	const {mutate: loginMutation, isPending, isError} = useMutation({
+	const {mutate: loginMutation, isPending, isError, error} = useMutation({
 		mutationFn: async({username, password}) => {
 			try {
 				const res = await fetch("/api/auth/login", {
@@ -45,7 +45,7 @@ const LoginPage = () => {
 		onError: () =>{
 			toast.success("Login failure");
 		}
-	})
+	});
 
 
 	const handleSubmit = (e) => {
