@@ -15,7 +15,7 @@ const EditProfileModal = ({ authUser }) => {
 		currentPassword: "",
 	});
 
-	const {mutate:updateProfile, isPending:isUpdatingProfile} = useMutation({
+	const {mutateAsync:updateProfile, isPending:isUpdatingProfile} = useMutation({
 		mutationFn: async () => {
 			try {
 				const res = await fetch(`/api/users/update`, {
@@ -77,7 +77,7 @@ const EditProfileModal = ({ authUser }) => {
 						className='flex flex-col gap-4'
 						onSubmit={(e) => {
 							e.preventDefault();
-							updateProfile();
+							updateProfile(formData);
 						}}
 					>
 						<div className='flex flex-wrap gap-2'>
