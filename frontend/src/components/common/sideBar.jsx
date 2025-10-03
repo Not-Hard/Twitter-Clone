@@ -7,23 +7,26 @@ import { Link } from "react-router-dom";
 import { BiLogOut } from "react-icons/bi";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const Sidebar = () => {
 
 	const queryClient = useQueryClient();
+	const navigate = useNavigate();
 
-	const{ mutate: logout, isPending, isError, error} = useMutation({
+	const{ mutate: logout} = useMutation({
 		mutationFn: async () => {
 			try {
 				const res = await fetch("/api/auth/logout", {
 				method: "POST",
-			})
+				});
 
-			const data = await res.json();
+				const data = await res.json();
 
-			if(!res.ok){
-				throw new Error( data.error || "Something went wrong");
-			}
+				if(!res.ok){
+					throw new Error( data.error || "Something went wrong");
+				}
 			} catch (error) {
 				throw new Error(error);
 			}
@@ -31,7 +34,12 @@ const Sidebar = () => {
 		onSuccess: () => {
 			queryClient.invalidateQueries({queryKey: ["authUser"]});
 			toast.success("Logout successful");
-		}
+			navigate("/"); // Redirect to login page
+			console.log("Redirecting...");
+		},
+		onError: () => {
+			toast.error("Logout failed");
+		},
 	})
 
 	const {data:authUser} = useQuery({queryKey: ["authUser"]});
@@ -88,8 +96,9 @@ const Sidebar = () => {
 								<p className='text-slate-500 text-sm'>@{authUser?.username}</p>
 							</div>
 							<BiLogOut className='w-5 h-5 cursor-pointer' 
-								onClick={(e) => {
-									e.preventDefault();
+								onClick={() => {
+									// Put the authUser to null in the cache
+									queryClient.setQueryData(["authUser"], null);
 									logout();
 								}}
 							/>
