@@ -84,6 +84,11 @@ export const login = async (req, res) => {
         const user = await User.findOne({username});
         const isPasswordCorrect = user ? await bcrypt.compare(password, user.password) : false;
 
+        // Check if all fields are provided
+        if(!username || !password){
+            return res.status(400).json({ error: 'All fields are required' });
+        }
+
         // Check if user exists and password is correct
         if (!user || !isPasswordCorrect) {
             return res.status(401).json({ error: 'Invalid username or password' });

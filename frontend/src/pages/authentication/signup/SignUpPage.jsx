@@ -9,6 +9,7 @@ import { MdPassword } from "react-icons/md";
 import { MdDriveFileRenameOutline } from "react-icons/md";
 import { useMutation } from "@tanstack/react-query"
 import toast from "react-hot-toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 const SignUpPage = () => {
 	const [formData, setFormData] = useState({
@@ -17,6 +18,8 @@ const SignUpPage = () => {
 		fullName: "",
 		password: "",
 	});
+
+	const queryClient = useQueryClient();
 
 	// When you need to manipulate the data(creating, updating  and deleting)
 	const { mutate, isError, isPending, error} = useMutation({
@@ -44,6 +47,8 @@ const SignUpPage = () => {
 		},
 		onSuccess: () =>  {
 			toast.success("Account created successfully")
+			// Invalidate and refetch
+			queryClient.invalidateQueries({ queryKey: ['authUser'] });
 		} 
 	}
 	);
@@ -68,7 +73,7 @@ const SignUpPage = () => {
 			<div className='flex-1 flex flex-col justify-center items-center'>
 				<form className='lg:w-2/3  mx-auto md:mx-20 flex gap-4 flex-col' onSubmit={handleSubmit}>
 					<XSvg className='w-24 lg:hidden fill-white' />
-					<h1 className='text-4xl font-extrabold text-white'>Join today.</h1>
+					<h1 className='text-4xl font-extrabold text-white'>Join Today.</h1>
 					<label className='input input-bordered rounded flex items-center gap-2'>
 						<MdOutlineMail />
 						<input
