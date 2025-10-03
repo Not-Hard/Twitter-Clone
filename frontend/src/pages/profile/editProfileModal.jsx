@@ -16,14 +16,14 @@ const EditProfileModal = ({ authUser }) => {
 	});
 
 	const {mutateAsync:updateProfile, isPending:isUpdatingProfile} = useMutation({
-		mutationFn: async () => {
+		mutationFn: async (fields) => {
 			try {
 				const res = await fetch(`/api/users/update`, {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
 					},
-					body: JSON.stringify(formData),
+					body: JSON.stringify(fields),
 				});
 				const data = await res.json();
 				if(!res.ok) throw new Error(data.error || "Something went wrong");
@@ -46,6 +46,17 @@ const EditProfileModal = ({ authUser }) => {
 
 	const handleInputChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
+	};
+
+	// Check wich fields have changed
+	const getChangedFields = () => {
+		const changedFields = {};
+		for (const key in formData) {
+			if (formData[key] !== authUser[key] && formData[key] !== "") {
+				changedFields[key] = formData[key];
+			}
+		}
+		return changedFields;
 	};
 
 	useEffect(() => {
@@ -77,7 +88,7 @@ const EditProfileModal = ({ authUser }) => {
 						className='flex flex-col gap-4'
 						onSubmit={(e) => {
 							e.preventDefault();
-							updateProfile(formData);
+							updateProfile(getChangedFields());
 						}}
 					>
 						<div className='flex flex-wrap gap-2'>
