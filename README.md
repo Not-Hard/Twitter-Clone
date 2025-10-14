@@ -305,11 +305,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Image handling powered by Cloudinary
 - Authentication patterns from JWT best practices
 
----
 
-**Note**: This is a learning project designed to demonstrate full-stack development skills. For production use, additional security measures, testing, and optimizations should be implemented.
-
-## 📞 Contact
 
 If you have any questions or suggestions, feel free to reach out!
 
